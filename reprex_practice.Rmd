@@ -37,7 +37,7 @@ mack_creek_lengths <- mack_creek_vertebrates %>%
   clean_names() %>% 
   select(year:sampledate) %>% 
   filter(section == "CC") %>% 
-  mutate(across(where(is.character, tolower))) %>% 
+  mutate(across(.cols = where(is.character), .fns = tolower)) %>% 
   drop_na(species) %>% 
   group_by(species) %>% 
   summarize(mean_length_cm = mean(length1, na.rm = TRUE),
@@ -45,20 +45,55 @@ mack_creek_lengths <- mack_creek_vertebrates %>%
   ungroup()
 ```
 
+```{r}
+library(here)
+library(tidyverse)
+library(janitor)
+
+df <- tribble(
+  ~Names, ~Hike, ~Length, 
+  "Joe", "SB", 40, 
+  "Halina", "GC", 21, 
+  "Mia", "YS", 15
+) 
+df
+
+df %>% clean_names() %>% 
+  mutate(across(.fns = tolower, .cols = where(is.character)))
+# To use the across function make sure you identify what each argument is or write them  in the correct order for the definition of the function. 
+
+```
+
+
 ### reprex 2
 
 Identify what is causing the problem in the code below (there's only one thing). Then, create a very simple reprex that would help yourself, future you, or a colleague fix the problem. **Post your reprex as an issue in your own fork on GitHub.**
 
 ```{r}
 # Example 2:
-mack_creek_vertebrates %>% 
+df_mack <- mack_creek_vertebrates %>% 
   clean_names() %>% 
-  filter(species == "ONCL") %>% 
-  ggplot(aes(x = length1, y = weight)) +
-         geom_point(aes(shape = 12), color = "purple") +
-         theme_minimal() +
-         labs(x = "Cutthroat trout length (cm)",
-              y = "Weight (g)")
+  filter(species == "ONCL")
+
+
+ggplot(df_mack, aes(x = length1, y = weight)) +
+  geom_point(shape = 12, color = "purple") +
+  theme_minimal() +
+  labs(x = "Cutthroat trout length (cm)",
+       y = "Weight (g)")
 ```
+
+```{r}
+library(tidyverse)
+library(here)
+library(palmerpenguins)
+
+penguins %>% clean_names %>% 
+  filter(species == "Chinstrap") %>% 
+  ggplot(aes(x = body_mass_g, y = flipper_length_mm))+
+  geom_point(shape = 12, color = "black") 
+# The only things that go into aes() when creating plots in r are variables from the data frame. The remainder of the customizations should be outside of aes(). 
+```
+
 
 ## End
